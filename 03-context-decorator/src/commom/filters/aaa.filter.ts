@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { AaaException } from './aaa-exception';
+import { AaaException } from '../../aaa/aaa-exception';
 
 @Catch(AaaException)
 export class AaaFilter<T> implements ExceptionFilter {

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { Role } from './role';
+import { Role } from '../../aaa/role';
 
 @Injectable()
 export class AaaGuard implements CanActivate {
@@ -22,7 +22,6 @@ export class AaaGuard implements CanActivate {
     if (!Roles) {
       return true;
     }
-    console.log(context.switchToHttp().getRequest());
     const { user } = context.switchToHttp().getRequest();
     console.log('user => ', user);
     return Roles.some((role) => user && user.roles?.include(role));
