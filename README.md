@@ -29,3 +29,8 @@
 @Redirect：指定重定向的 url
 @Render：指定渲染用的模版引擎
 ```
+
+## ExecutionContext：切换不同上下文
+
+- Guard、Interceptor、Exception Filter 跨多种上下文复用呢
+  > Nest 的解决方法是 ArgumentHost 和 ExecutionContext 类
