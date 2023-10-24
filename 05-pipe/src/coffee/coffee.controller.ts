@@ -12,6 +12,8 @@ import {
   HttpException,
   ParseArrayPipe,
   ParseEnumPipe,
+  HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { CoffeeService } from './coffee.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
@@ -29,7 +31,15 @@ export class CoffeeController {
 
   @Post()
   create(@Body() createCoffeeDto: CreateCoffeeDto) {
+    console.log(createCoffeeDto);
+    // throw new BadRequestException('BadRequestException');
     return this.coffeeService.create(createCoffeeDto);
+  }
+
+  @Get('req')
+  findaa() {
+    throw new HttpException('HttpException', HttpStatus.BAD_REQUEST);
+    return '1';
   }
 
   // @Get()
