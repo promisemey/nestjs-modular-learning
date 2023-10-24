@@ -22,6 +22,8 @@ export const Paramstest = createParamDecorator(
     return '测试参数装饰器';
   },
 );
+
+//
 // export const Aaa = (...args: string[]) => {
 //   console.log('=>>>', args);
 //   return SetMetadata('aaa', args);
