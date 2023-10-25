@@ -34,3 +34,17 @@
 
 - Guard、Interceptor、Exception Filter 跨多种上下文复用呢
   > Nest 的解决方法是 ArgumentHost 和 ExecutionContext 类
+
+## dockerFile
+
+### 指令
+
+- FROM:基于一个基础镜像来修改
+- WORKDIR:指定当前工作目录
+- COPY:把容器外的内容复制到容器内
+- EXPOSE:声明当前容器要访问的网络端口
+- RUN:在容器内执行命令
+- CMD:容器启动时执行的命令
+
+> docker build -t mest:first 构建
+> runc 错误 RUN ln -s /sbin/runc /usr/bin/runc
