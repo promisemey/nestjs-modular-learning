@@ -12,6 +12,7 @@ import { BbbModule } from './bbb/bbb.module';
 import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './common/guard/login.guard';
 import { RoleGuard } from './common/guard/role.guard';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { RoleGuard } from './common/guard/role.guard';
     UserModule,
     AaaModule,
     BbbModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
