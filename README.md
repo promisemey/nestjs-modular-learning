@@ -33,6 +33,7 @@
 ## ExecutionContext：切换不同上下文
 
 - Guard、Interceptor、Exception Filter 跨多种上下文复用呢
+  
   > Nest 的解决方法是 ArgumentHost 和 ExecutionContext 类
 
 ## dockerFile
@@ -48,3 +49,40 @@
 
 > docker build -t mest:first 构建
 > runc 错误 RUN ln -s /sbin/runc /usr/bin/runc
+
+
+
+## Reflector
+
++  get 
+
+  >  `this.reflector.get(key, target)`：这个方法用于获取特定键（key）的元数据。你可以指定一个目标（target），例如一个类、方法、属性或其他项，然后通过键来检索与该目标关联的元数据。这对于在运行时检索元数据信息非常有用 
+  >
+  > ```js
+  > const metadata = this.reflector.get('custom-key', target);
+  > ```
+
++ set 
+
+  >  `this.reflector.set(key, value, target)`：这个方法用于设置特定键的元数据。你可以指定一个目标（target），然后通过键来将元数据与该目标关联起来。这对于在运行时设置元数据信息非常有用。例如： 
+  >
+  > ```js
+  > this.reflector.set('custom-key', 'custom-value', target);
+  > ```
+
++ getAll
+
+  >  `this.reflector.getAll(metadataKey, targets)`：这个方法用于获取多个目标的特定元数据。你可以指定一个元数据键（metadataKey）以及一个或多个目标（targets），然后检索所有指定目标的特定元数据。例如： 
+  >
+  > ```js
+  > const metadata = this.reflector.getAll('custom-key', targets);
+  > ```
+
++  getAllAndOverride 
+
+  >  `this.reflector.getAllAndOverride(metadataKey, targets)`：这个方法类似于 `getAll`，但它还考虑到继承和覆盖的情况。它返回与指定元数据键关联的所有目标的元数据，并在继承和覆盖的情况下，将父类或父方法的元数据覆盖为子类或子方法的元数据。这对于检索和合并继承的元数据非常有用。例如： 
+  >
+  > ```js
+  > const metadata = this.reflector.getAllAndOverride('custom-key', targets);
+  > ```
+
