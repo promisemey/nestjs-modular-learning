@@ -33,7 +33,7 @@
 ## ExecutionContext：切换不同上下文
 
 - Guard、Interceptor、Exception Filter 跨多种上下文复用呢
-  
+
   > Nest 的解决方法是 ArgumentHost 和 ExecutionContext 类
 
 ## dockerFile
@@ -50,39 +50,50 @@
 > docker build -t mest:first 构建
 > runc 错误 RUN ln -s /sbin/runc /usr/bin/runc
 
-
-
 ## Reflector
 
-+  get 
+- get
 
-  >  `this.reflector.get(key, target)`：这个方法用于获取特定键（key）的元数据。你可以指定一个目标（target），例如一个类、方法、属性或其他项，然后通过键来检索与该目标关联的元数据。这对于在运行时检索元数据信息非常有用 
+> `this.reflector.get(key, target)`：这个方法用于获取特定键（key）的元数据。你可以指定一个目标（target），例如一个类、方法、属性或其他项，然后通过键来检索与该目标关联的元数据。这对于在运行时检索元数据信息非常有用
+>
+> ```js
+> const metadata = this.reflector.get("custom-key", target);
+> ```
+
+- set
+
+  > `this.reflector.set(key, value, target)`：这个方法用于设置特定键的元数据。你可以指定一个目标（target），然后通过键来将元数据与该目标关联起来。这对于在运行时设置元数据信息非常有用。例如：
   >
   > ```js
-  > const metadata = this.reflector.get('custom-key', target);
+  > this.reflector.set("custom-key", "custom-value", target);
   > ```
 
-+ set 
+- getAll
 
-  >  `this.reflector.set(key, value, target)`：这个方法用于设置特定键的元数据。你可以指定一个目标（target），然后通过键来将元数据与该目标关联起来。这对于在运行时设置元数据信息非常有用。例如： 
+  > `this.reflector.getAll(metadataKey, targets)`：这个方法用于获取多个目标的特定元数据。你可以指定一个元数据键（metadataKey）以及一个或多个目标（targets），然后检索所有指定目标的特定元数据。例如：
   >
   > ```js
-  > this.reflector.set('custom-key', 'custom-value', target);
+  > const metadata = this.reflector.getAll("custom-key", targets);
   > ```
 
-+ getAll
+- getAllAndOverride
 
-  >  `this.reflector.getAll(metadataKey, targets)`：这个方法用于获取多个目标的特定元数据。你可以指定一个元数据键（metadataKey）以及一个或多个目标（targets），然后检索所有指定目标的特定元数据。例如： 
-  >
-  > ```js
-  > const metadata = this.reflector.getAll('custom-key', targets);
-  > ```
+> `this.reflector.getAllAndOverride(metadataKey, targets)`：这个方法类似于 `getAll`，但它还考虑到继承和覆盖的情况。它返回与指定元数据键关联的所有目标的元数据，并在继承和覆盖的情况下，将父类或父方法的元数据覆盖为子类或子方法的元数据。这对于检索和合并继承的元数据非常有用。例如：
+>
+> ```js
+> const metadata = this.reflector.getAllAndOverride("custom-key", targets);
+> ```
 
-+  getAllAndOverride 
+## Swagger
 
-  >  `this.reflector.getAllAndOverride(metadataKey, targets)`：这个方法类似于 `getAll`，但它还考虑到继承和覆盖的情况。它返回与指定元数据键关联的所有目标的元数据，并在继承和覆盖的情况下，将父类或父方法的元数据覆盖为子类或子方法的元数据。这对于检索和合并继承的元数据非常有用。例如： 
-  >
-  > ```js
-  > const metadata = this.reflector.getAllAndOverride('custom-key', targets);
-  > ```
-
+> ApiOperation：声明接口信息
+> ApiResponse：声明响应信息，一个接口可以多种响应
+> ApiQuery：声明 query 参数信息
+> ApiParam：声明 param 参数信息
+> ApiBody：声明 body 参数信息，可以省略
+> ApiProperty：声明 dto、vo 的属性信息
+> ApiPropertyOptional：声明 dto、vo 的属性信息，相当于 required: false 的 ApiProperty
+> ApiTags：对接口进行分组
+> ApiBearerAuth：通过 jwt 的方式认证，也就是 Authorization: Bearer xxx
+> ApiCookieAuth：通过 cookie 的方式认证
+> ApiBasicAuth：通过用户名、密码认证，在 header 添加 Authorization: Basic xxx

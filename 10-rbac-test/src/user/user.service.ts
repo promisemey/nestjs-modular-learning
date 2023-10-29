@@ -138,7 +138,14 @@ export class UserService {
     return 'This action adds a new user';
   }
 
-  findAll() {
+  async findAll() {
+    return await this.userRepository.find({
+      relations: {
+        roles: {
+          permissions: true,
+        },
+      },
+    });
     return `This action returns all user`;
   }
 

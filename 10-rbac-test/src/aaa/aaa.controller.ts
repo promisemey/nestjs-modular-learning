@@ -11,8 +11,18 @@ import { Public, Role } from 'src/common/decorator/public.decorator';
 import { AaaService } from './aaa.service';
 import { CreateAaaDto } from './dto/create-aaa.dto';
 import { UpdateAaaDto } from './dto/update-aaa.dto';
+import {
+  ApiBasicAuth,
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('aaa')
+@ApiTags('AAA')
+@ApiCookieAuth('cookie')
+@ApiBasicAuth('basic')
+@ApiBearerAuth('bearer')
 // @Public()
 export class AaaController {
   constructor(private readonly aaaService: AaaService) {}

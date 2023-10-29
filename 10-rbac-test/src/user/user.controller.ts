@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UnauthorizedException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,8 +17,12 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Public } from 'src/common/decorator/public.decorator';
 import { User } from './entities/user.entity';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { json } from 'stream/consumers';
+import { UserVo } from './vo/user.vo';
 
 @Controller('user')
+@ApiTags('USER')
 @Public()
 export class UserController {
   constructor(
@@ -109,8 +114,18 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiResponse({
+    // statusbar:HttpStatus.OK,
+    status: HttpStatus.OK,
+    description: '用户详情查询成功',
+    type: [UserVo],
+  })
+  @ApiOperation({
+    summary: '获取用户详情',
+    description: '--------',
+  })
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
