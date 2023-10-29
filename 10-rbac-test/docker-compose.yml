@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  rbac-test:
+    build: 
+      context: ./
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mysql-container
+      - redis-container
+    ports:
+      - '3000:3000'
+    # networks:
+    #   - common-network
+    # 桥接网络，不需要更该宿主机ip， 去掉端口号 
+  mysql-container:
+    image: mysql:8.0.11
+    # networks:
+    #   - common-network
+    ports:
+      - '3308:3306'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nest_rbac
+    volumes:
+      - E:\project\B-nestJs\mysql:/var/lib/mysql
+  redis-container:
+    image: redis
+    # networks:
+    #   - common-network
+    ports:
+      - '6379:6379'
+    volumes:
+      - E:\project\B-nestJs\redis:/data
+# networks:
+#   common-network:
+#     driver: bridge
+# driver网络驱动

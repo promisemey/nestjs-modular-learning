@@ -20,7 +20,7 @@ import { RedisModule } from './redis/redis.module';
       global: true,
       secret: 'm',
       signOptions: {
-        expiresIn: '7d',
+        expiresIn: '30m',
       },
     }),
     TypeOrmModule.forRoot({
