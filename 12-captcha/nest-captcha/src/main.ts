@@ -5,6 +5,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // 开启跨域
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(3000, '192.168.0.106');
 }
 bootstrap();
