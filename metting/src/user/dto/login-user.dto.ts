@@ -8,16 +8,12 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class RegisterUserDto {
+export class LoginUserDto {
   @IsNotEmpty({
     message: '用户名不能为空',
   })
-  @ApiProperty({ default: 'puma' })
+  @ApiProperty({ examples: ['normall'], default: ['normall'] })
   username: string;
-
-  @IsOptional()
-  @ApiPropertyOptional()
-  nickName: string;
 
   @IsNotEmpty({
     message: '密码不能为空',
@@ -28,24 +24,6 @@ export class RegisterUserDto {
   @MaxLength(20, {
     message: '密码不能超过 20 位',
   })
-  @ApiProperty({ default: 'hrr111' })
+  @ApiProperty({ default: '111111' })
   password: string;
-
-  @IsNotEmpty({
-    message: '邮箱不能为空',
-  })
-  @IsEmail(
-    {},
-    {
-      message: '不是合法的邮箱格式',
-    },
-  )
-  @ApiProperty({ default: '2309283877@qq.com' })
-  email: string;
-
-  @IsNotEmpty({
-    message: '验证码不能为空',
-  })
-  @ApiProperty({})
-  captcha: string;
 }
