@@ -22,6 +22,7 @@ import { LoginUserVo } from './vo/login-user.vo';
 import { RegisterUserVo } from './vo/register-user.vo';
 import { ConfigService } from '@nestjs/config';
 import { userInfo } from 'os';
+import { Allow } from 'src/common/decorator/allow.decorator';
 
 @Controller('user')
 export class UserController {
@@ -35,6 +36,31 @@ export class UserController {
     private readonly configService: ConfigService,
   ) {}
 
+  // 创造token
+  private readonly createToken = (example) => {
+    // 生成Token
+    example.accessToken = this.jwtService.sign(
+      {
+        userId: example.userInfo.id,
+        username: example.userInfo.username,
+        roles: example.userInfo.roles,
+        permissions: example.userInfo.permissions,
+      },
+      {
+        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRES ') || '30m',
+      },
+    );
+
+    example.refreshToken = this.jwtService.sign(
+      {
+        userId: example.userInfo.id,
+      },
+      {
+        expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRES') || '7d',
+      },
+    );
+  };
+
   // 初始化数据
   @Post('init')
   async initRolePermission() {
@@ -43,6 +69,7 @@ export class UserController {
   }
 
   // 刷新token
+  @Allow()
   @Get('refresh')
   async refresh(@Query('refreshToken') refreshToken: string) {
     try {
@@ -85,53 +112,29 @@ export class UserController {
   }
 
   // 登录
+  @Allow()
   @Post('login')
   async normalLogin(@Body() loginUserDto: LoginUserDto): Promise<LoginUserVo> {
     const vo = await this.userService.login(loginUserDto, false);
-
-    // 生成Token
-    vo.accessToken = this.jwtService.sign(
-      {
-        userId: vo.userInfo.id,
-        username: vo.userInfo.username,
-        roles: vo.userInfo.roles,
-        permissions: vo.userInfo.permissions,
-      },
-      {
-        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRES ') || '30m',
-      },
-    );
-
-    vo.refreshToken = this.jwtService.sign(
-      {
-        userId: vo.userInfo.id,
-      },
-      {
-        expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRES') || '7d',
-      },
-    );
-
+    this.createToken(vo);
     return vo;
   }
 
   // 管理员登录
+  @Allow()
   @Post('admin/login')
   async adminLogin(
     @Body() loginUserDto: LoginAdminUserDto,
   ): Promise<LoginUserVo> {
     const vo = await this.userService.login(loginUserDto, true);
 
-    this.jwtService.sign({
-      userId: vo.userInfo.id,
-      username: vo.userInfo.username,
-      roles: vo.userInfo.roles,
-      permissions: vo.userInfo.permissions,
-    });
+    this.createToken(vo);
 
     return vo;
   }
 
   // 注册
+  @Allow()
   @Post('register')
   @ApiBody({
     type: RegisterUserDto,
@@ -158,6 +161,7 @@ export class UserController {
     return await this.userService.findUserById(+id, isAdmin);
   }
 
+  @Allow()
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
     // 生成验证码

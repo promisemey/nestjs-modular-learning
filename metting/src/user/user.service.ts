@@ -222,7 +222,7 @@ export class UserService {
     });
   }
 
-  //
+  // 根据id查找用户
   async findUserById(id: number, isAdmin: boolean): Promise<UserVo> {
     const user = await this.userRepository.findOne({
       where: {

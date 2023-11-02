@@ -12,7 +12,7 @@ export class LoginUserDto {
   @IsNotEmpty({
     message: '用户名不能为空',
   })
-  @ApiProperty({ examples: ['normall'], default: ['normall'] })
+  @ApiProperty({ example: 'normal', default: 'normal' })
   username: string;
 
   @IsNotEmpty({
