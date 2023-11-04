@@ -4,20 +4,23 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { RedisService } from 'src/redis/redis.service';
 import * as argon2 from 'argon2';
-import { Role } from './entities/role.entity';
-import { Permission } from './entities/permission.entity';
 import { async } from 'rxjs';
+import { RedisService } from 'src/redis/redis.service';
+import { Like, Not, Repository } from 'typeorm';
 import { LoginUserDto } from './dto/login-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { Permission } from './entities/permission.entity';
+import { Role } from './entities/role.entity';
+import { User } from './entities/user.entity';
 import { LoginUserVo } from './vo/login-user.vo';
 import { UserVo } from './vo/user.vo';
+import { ListUserDto } from './dto/list-user.dto';
 
 @Injectable()
 export class UserService {
@@ -29,6 +32,7 @@ export class UserService {
   private roleRepository: Repository<Role>;
   @InjectRepository(Permission)
   private permissionRepository: Repository<Permission>;
+  private logger: Logger;
 
   // 初始数据
   async initRolePermission() {
@@ -168,7 +172,6 @@ export class UserService {
       ...registerUser,
       password: hashPassword,
     });
-    // console.log('user => ', user.password.length);
 
     return this.userRepository.save(user);
   }
@@ -223,7 +226,7 @@ export class UserService {
   }
 
   // 根据id查找用户
-  async findUserById(id: number, isAdmin: boolean): Promise<UserVo> {
+  async findUserById(id, isAdmin = false): Promise<UserVo> {
     const user = await this.userRepository.findOne({
       where: {
         id,
@@ -244,6 +247,87 @@ export class UserService {
         curr.permissions.forEach((permiss) => prev.push(permiss));
         return [...new Set(prev)];
       }, []),
+    };
+  }
+
+  // 更新密码
+  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+    console.log(`update_password_captcha_${passwordDto.email}`);
+    const captcha = await this.redisService.get(
+      `update_password_captcha_${passwordDto.email}`,
+    );
+
+    if (!captcha) {
+      throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
+    }
+
+    if (passwordDto.captcha !== captcha) {
+      throw new HttpException('验证码不正确', HttpStatus.BAD_REQUEST);
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    foundUser.password = await argon2.hash(passwordDto.password);
+
+    try {
+      const user = await this.userRepository.preload(foundUser);
+      await this.userRepository.save(user);
+      return '密码修改成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '密码修改失败';
+    }
+  }
+
+  // 冻结用户
+  async freezeUserById(id: number, isFrozen: boolean) {
+    const user = await this.userRepository.findOneBy({
+      id,
+      isFrozen: Not(isFrozen),
+    });
+
+    if (!user)
+      throw new HttpException('冻结状态未修改', HttpStatus.BAD_REQUEST);
+
+    user.isFrozen = isFrozen;
+    return await this.userRepository.save(user);
+  }
+
+  // 用户列表
+  async getUserList(listUserDto: ListUserDto) {
+    let skip = (listUserDto.pageNo - 1) * listUserDto.pageSize;
+
+    if (!skip) skip = 0;
+
+    const condition: Record<string, any> = {};
+
+    if (listUserDto.username)
+      condition.username = Like(`%${listUserDto.username}%`);
+    if (listUserDto.nickName)
+      condition.nickName = Like(`%${listUserDto.nickName}%`);
+    if (listUserDto.email) condition.email = Like(`%${listUserDto.email}%`);
+
+    const [users, total] = await this.userRepository.findAndCount({
+      select: [
+        'id',
+        'username',
+        'nickName',
+        'email',
+        'phoneNumber',
+        'isFrozen',
+        'avatar',
+        'createTime',
+      ],
+      skip,
+      take: listUserDto.pageSize,
+      where: condition,
+    });
+
+    return {
+      users,
+      total,
     };
   }
 }

@@ -15,13 +15,11 @@ import {
   AllowPermissions,
   UserInfo,
 } from 'src/common/decorator/allow.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { userInfo } from 'os';
+import { ApiBasicAuth, ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('ccc')
-@ApiBearerAuth(
-  'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoibm9ybWFsIiwicm9sZXMiOlsi5pmu6YCa55So5oi3Il0sInBlcm1pc3Npb25zIjpbeyJpZCI6MSwiY29kZSI6ImNjYyIsImRlc2NyaXB0aW9uIjoi6K6_6ZeuIGNjYyDmjqXlj6MifV0sImlhdCI6MTY5ODkxNTIyMywiZXhwIjoxNjk4OTE3MDIzfQ.PFliYPhuN3Fce56s38glxdqSqeaSLXmnbElLiqK5T84',
-)
+@ApiBasicAuth()
+@ApiBearerAuth()
 @AllowPermissions('ccc')
 export class CccController {
   constructor(private readonly cccService: CccService) {}
